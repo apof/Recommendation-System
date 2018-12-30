@@ -1,0 +1,33 @@
+# In order to execute this "Makefile.cluster" just type "make -f Makefile.cluster" 
+
+OBJS 	= cluster.o cluster_methods.o HashTable.o HyperCube.o Vector.o VectorList.o utils.o 
+SOURCE	= cluster.cc cluster_methods.cc ../../Part1/Proj1_updated/HashTable.cc ../../Part1/Proj1_updated/HyperCube.cc ../../Part1/Proj1_updated/Vector.cc ../../Part1/Proj1_updated/VectorList.cc ../../Part1/Proj1_updated/utils.cc
+HEADER  = ../../Part1/Proj1_updated/VectorList.h ../../Part1/Proj1_updated/utils.h ../../Part1/Proj1_updated/Vector.h ../../Part1/Proj1_updated/HashTable.h .../../Part1/Proj1_updated/HyperCube.h cluster.h
+OUT  	= cluster
+CC	= g++
+FLAGS   = -c
+# -c flag generates object code for separate files
+
+all: $(OBJS)
+	$(CC) -std=c++11  -o $(OUT) $(OBJS) 
+
+# create/compile the individual files >>separately<<
+cluster.o: cluster.cc
+	$(CC) -std=c++11 $(FLAGS) cluster.cc
+cluster_methods.o: cluster_methods.cc
+	$(CC) -std=c++11 $(FLAGS) cluster_methods.cc
+HashTable.o: ../../Part1/Proj1_updated/HashTable.cc
+	$(CC) -std=c++11 $(FLAGS) ../../Part1/Proj1_updated/HashTable.cc
+HyperCube.o: ../../Part1/Proj1_updated/HyperCube.cc
+	$(CC) -std=c++11 $(FLAGS) ../../Part1/Proj1_updated/HyperCube.cc
+Vector.o: ../../Part1/Proj1_updated/Vector.cc
+	$(CC) -std=c++11 $(FLAGS) ../../Part1/Proj1_updated/Vector.cc
+VectorList.o: ../../Part1/Proj1_updated/VectorList.cc
+	$(CC) -std=c++11 $(FLAGS) ../../Part1/Proj1_updated/VectorList.cc
+utils.o: ../../Part1/Proj1_updated/utils.cc
+	$(CC) -std=c++11 $(FLAGS) ../../Part1/Proj1_updated/utils.cc
+
+
+# clean house
+clean:
+	rm -f $(OBJS) $(OUT)
