@@ -71,6 +71,12 @@ Coin** read_coins(string file){
 			}
 		}
 
+		// erase newline character from the last string of the coins list and put it back to the list
+		string back = l.back();
+		l.pop_back();
+		back.erase( back.end()-1 );
+		l.push_back(back);
+
 		coin_pointers[coin_index] = new Coin(name,l);
 
 		coin_index++;
@@ -147,12 +153,50 @@ void stand_out_info_coins(Tweet** T,unordered_map<string,double> lexicon,unorder
 				}
 				else
 				{
-					cout<<"Not found in lexicon "<<x<<endl;
+					//cout<<"Not found in lexicon "<<x<<endl;
 				}
 
 			}
 		}
 	}
+}
+
+void create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_lex){
+
+	User** user_pointers =  new User*[user_number];
+	for(int i=0; i<user_number; i++) user_pointers[i] = new User(i+1);
+
+	for(int i=0; i<TWEET_NUMBER; i++)
+	{
+		user_pointers[(T[i]->user_id)-1]->user_tweets.push_back(T[i]);
+	}
+
+	for(int i=0; i<user_number; i++)
+	{
+
+		for (auto t : user_pointers[i]->user_tweets)
+		{
+
+			for(auto c: t->coins)
+			{
+
+				unordered_map<string,int>::iterator it;
+				it = coin_lex.find(c);
+
+				user_pointers[i]->flag_vector[it->second] = 1;
+				user_pointers[i]->vector[it->second] += t->value; 
+
+			}
+
+		}
+
+	}
+
+	for(int i=0; i<user_number; i++)
+	{
+		user_pointers[i]->print_user();
+	}
+
 }
 
 void data_preprocessing(string file1,string file2,string file3){
@@ -171,14 +215,17 @@ void data_preprocessing(string file1,string file2,string file3){
   	unordered_map<string,int> coin_lex = convert_coins_to_lexicon(C);
 
   	/*for (auto x : coin_lex) 
-      cout << x.first <<endl<< x.second << endl;
+      cout << x.first <<" "<< x.second << endl;
 	
 	*/
 	stand_out_info_coins(T,lexicon,coin_lex);
 
-	for(int i=0; i<TWEET_NUMBER; i++){
-		T[i]->print_tweet();
-	}
+	int user_number = T[TWEET_NUMBER-1]->user_id;
 
+	/*for(int i=0; i<TWEET_NUMBER; i++){
+		T[i]->print_tweet();
+	}*/
+
+	create_vectors(T,user_number,coin_lex);
 
 }

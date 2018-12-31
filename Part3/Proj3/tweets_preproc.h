@@ -79,11 +79,62 @@ public:
 
 };
 
+
+class User {
+
+public:
+
+	int id;
+	list<Tweet*> user_tweets;
+	long double* vector;
+	int* flag_vector;
+
+	User(int Id){
+		id = Id;
+		vector = new long double[COIN_NUMBER];
+		flag_vector = new int[COIN_NUMBER];
+		for(int i=0; i<COIN_NUMBER; i++)
+		{
+			vector[i] = 0.0;
+			flag_vector[i] = 0;
+		}
+	}
+
+	~User(){
+
+			delete []vector;
+			delete []flag_vector;
+	
+	}
+
+
+	void print_user(){
+		cout<<"@_@_@_@_@--->User "<<id<<" info"<<endl;
+		for (auto n : user_tweets)
+			n->print_tweet();
+		cout<<"User Vector: ";
+		for(int i=0; i<COIN_NUMBER; i++)
+		{
+			cout<<vector[i]<<" ";
+		}
+		cout<<endl;
+		cout<<"User Total Coins: ";
+		for(int i=0; i<COIN_NUMBER; i++)
+		{
+			cout<<flag_vector[i]<<" ";
+		}
+		cout<<endl;
+
+	}
+
+};
+
 Tweet** read_tweets(string);
 Coin** read_coins(string);
 unordered_map<string, double> read_lexicon(string);
 void data_preprocessing(string,string,string);
 unordered_map<string,int> convert_coins_to_lexicon(Coin**);
 void stand_out_info_coins(Tweet**);
+void create_vectors(Tweet**,int,unordered_map<string,int>);
 
 #endif
