@@ -120,6 +120,8 @@ unordered_map<string,int> convert_coins_to_lexicon(Coin** C){
 
 		for (auto n : l)
 			coin_lex[n] = i;
+
+		coin_lex[C[i]->name] = i;
 	}
 
 	return coin_lex;
@@ -161,7 +163,7 @@ void stand_out_info_coins(Tweet** T,unordered_map<string,double> lexicon,unorder
 	}
 }
 
-void create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_lex){
+User** create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_lex){
 
 	User** user_pointers =  new User*[user_number];
 	for(int i=0; i<user_number; i++) user_pointers[i] = new User(i+1);
@@ -192,14 +194,16 @@ void create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_lex
 
 	}
 
-	for(int i=0; i<user_number; i++)
+	/*for(int i=0; i<user_number; i++)
 	{
 		user_pointers[i]->print_user();
-	}
+	}*/
+
+	return user_pointers;
 
 }
 
-void data_preprocessing(string file1,string file2,string file3){
+void data_preprocessing(string file1,string file2,string file3,string out){
 
 	Tweet** T = read_tweets(file1);
 	Coin** C = read_coins(file2);
@@ -226,6 +230,24 @@ void data_preprocessing(string file1,string file2,string file3){
 		T[i]->print_tweet();
 	}*/
 
-	create_vectors(T,user_number,coin_lex);
+	User** users = create_vectors(T,user_number,coin_lex);
+
+	ofstream outfile(out);
+
+	outfile<<" "<<"\t";
+	for(int i=0; i<COIN_NUMBER; i++)
+	{
+		outfile<<C[i]->name<<"\t";
+	}
+	outfile<<endl;
+	for(int i=0; i<user_number; i++)
+	{
+		outfile<<users[i]->id<<"\t";
+		for(int k=0; k<COIN_NUMBER; k++)
+		{
+			outfile<<users[i]->vector[k]<<"\t";
+		}
+		outfile<<endl;
+	}
 
 }

@@ -132,9 +132,9 @@ public:
 Tweet** read_tweets(string);
 Coin** read_coins(string);
 unordered_map<string, double> read_lexicon(string);
-void data_preprocessing(string,string,string);
+void data_preprocessing(string,string,string,string);
 unordered_map<string,int> convert_coins_to_lexicon(Coin**);
 void stand_out_info_coins(Tweet**);
-void create_vectors(Tweet**,int,unordered_map<string,int>);
+User** create_vectors(Tweet**,int,unordered_map<string,int>);
 
 #endif
