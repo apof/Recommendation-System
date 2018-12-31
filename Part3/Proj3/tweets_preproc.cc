@@ -160,6 +160,11 @@ void stand_out_info_coins(Tweet** T,unordered_map<string,double> lexicon,unorder
 
 			}
 		}
+		int alpha = 15;
+		if(T[i]->value!=0)
+		{
+			T[i]->value = T[i]->value/sqrt((T[i]->value)*(T[i]->value)+alpha);
+		}
 	}
 }
 
