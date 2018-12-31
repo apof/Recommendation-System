@@ -21,13 +21,19 @@ Tweet** read_tweets(string file){
 		list<string> l;
 		while(pch!=NULL)
 		{
-			pch = strtok(NULL,"\t\n");
+			pch = strtok(NULL,"\t");
 			if(pch!=NULL)
 			{
 				string str(pch);
 				l.push_back(str);
 			}
 		}
+
+		// erase newline character from the last string of the tweet and put it back to the list
+		string back = l.back();
+		l.pop_back();
+		back.erase( back.end()-1 );
+		l.push_back(back);
 
 		tweet_pointers[data_index] = new Tweet(tid,uid,l);
 
@@ -57,7 +63,7 @@ Coin** read_coins(string file){
 		list<string> l;
 		while(pch!=NULL)
 		{
-			pch = strtok(NULL,"\t\n");
+			pch = strtok(NULL,"\t");
 			if(pch!=NULL)
 			{
 				string str(pch);
@@ -113,30 +119,66 @@ unordered_map<string,int> convert_coins_to_lexicon(Coin** C){
 	return coin_lex;
 }
 
+void stand_out_info_coins(Tweet** T,unordered_map<string,double> lexicon,unordered_map<string,int> coin_lex){
+
+	for(int i=0; i<TWEET_NUMBER; i++)
+	{
+		for (auto x : T[i]->tweet)
+		{
+
+			unordered_map<string,int>::iterator it;
+			it = coin_lex.find(x);
+
+			if (it != coin_lex.end())
+			{
+				T[i]->coins.push_back(x);
+			}
+			else 
+			{				 
+				T[i]->info.push_back(x);
+				unordered_map<string,double>::iterator itt;
+
+				itt = lexicon.find(x);
+
+				if (itt != lexicon.end())
+				{
+					T[i]->value += itt->second;
+					T[i]->words_found++;
+				}
+				else
+				{
+					cout<<"Not found in lexicon "<<x<<endl;
+				}
+
+			}
+		}
+	}
+}
+
 void data_preprocessing(string file1,string file2,string file3){
 
 	Tweet** T = read_tweets(file1);
-
 	Coin** C = read_coins(file2);
 	unordered_map<string,double> lexicon = read_lexicon(file3);
 
-	for(int i=0; i<TWEET_NUMBER; i++){
-		T[i]->print_tweet();
-	}
-
-
-	for(int i=0; i<COIN_NUMBER; i++){
+	/*for(int i=0; i<COIN_NUMBER; i++){
 		C[i]->print_coin();
 	}
 
 	for (auto x : lexicon) 
       cout << x.first << " " << x.second << endl;
-
+	*/
   	unordered_map<string,int> coin_lex = convert_coins_to_lexicon(C);
 
-  	for (auto x : coin_lex) 
-      cout << x.first << " " << x.second << endl;
+  	/*for (auto x : coin_lex) 
+      cout << x.first <<endl<< x.second << endl;
+	
+	*/
+	stand_out_info_coins(T,lexicon,coin_lex);
 
+	for(int i=0; i<TWEET_NUMBER; i++){
+		T[i]->print_tweet();
+	}
 
 
 }

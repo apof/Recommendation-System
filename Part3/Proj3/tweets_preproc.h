@@ -5,37 +5,52 @@
 
 class Tweet {
 
-private:
+public:
 
 	int tweet_id;
 	int user_id;
 	list <string> tweet;
-
-public:
+	double value;
+	list<string> coins;
+	list<string> info;
+	int words_found;
 
 	Tweet(int t_id, int u_id, list<string> l){
 		tweet_id = t_id;
 		user_id = u_id;
 		tweet = l;
+		value = 0.0;
+		words_found = 0;
 	}
 
 	void print_tweet(){
 
-		cout<<tweet_id<<"-"<<user_id<<endl;
+		cout<<tweet_id<<"-"<<user_id<<"-"<<value<<" "<<words_found<<endl;
+		cout<<"Tweet: ";
 		for (auto n : tweet)
 			cout<<n<<" ";
 		cout<<endl;
+		cout<<"Tweets's coins: ";
+		for (auto n : coins)
+			cout<<n<<" ";
+		cout<<endl;
+		cout<<"Tweet's info: ";
+		for (auto n : info)
+			cout<<n<<" ";
+		cout<<endl;
+		cout<<"--------------------"<<endl;
+		
 	}
+
+
 };
 
 class Coin{
 
-private:
+public:
 
 	string name;
 	list<string> names;
-
-public:
 
 	Coin(string n,list<string> nn){
 
@@ -69,5 +84,6 @@ Coin** read_coins(string);
 unordered_map<string, double> read_lexicon(string);
 void data_preprocessing(string,string,string);
 unordered_map<string,int> convert_coins_to_lexicon(Coin**);
+void stand_out_info_coins(Tweet**);
 
 #endif
