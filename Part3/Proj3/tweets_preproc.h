@@ -88,6 +88,7 @@ public:
 	list<Tweet*> user_tweets;
 	long double* vector;
 	int* flag_vector;
+	int flag;
 
 	User(int Id){
 		id = Id;
@@ -105,6 +106,45 @@ public:
 			delete []vector;
 			delete []flag_vector;
 	
+	}
+
+	
+	void normalize(){
+
+		long double mean_val = 0.0;
+		int num = 0;
+
+		flag = 0;
+
+		for(int i = 0; i<COIN_NUMBER; i++)
+		{
+			if(flag_vector[i]==1)
+			{
+				num++;
+				mean_val += vector[i];
+
+				if(vector[i]!=0)
+				flag = 1;
+			}
+
+		}
+
+		mean_val = mean_val/num;
+
+		if(flag==1)
+		{
+
+		for(int i = 0; i<COIN_NUMBER; i++)
+		{
+			if(flag_vector[i]==1)
+			{
+				vector[i] -= mean_val;
+			}
+
+		}
+
+		}
+
 	}
 
 
@@ -132,9 +172,10 @@ public:
 Tweet** read_tweets(string);
 Coin** read_coins(string);
 unordered_map<string, double> read_lexicon(string);
-void data_preprocessing(string,string,string,string);
+void data_preprocessing(string,string,string,string,string);
 unordered_map<string,int> convert_coins_to_lexicon(Coin**);
 void stand_out_info_coins(Tweet**);
 User** create_vectors(Tweet**,int,unordered_map<string,int>);
+User** data_normalize(User**,int);
 
 #endif

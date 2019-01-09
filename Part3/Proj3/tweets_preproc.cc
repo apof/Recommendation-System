@@ -208,7 +208,16 @@ User** create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_l
 
 }
 
-void data_preprocessing(string file1,string file2,string file3,string out){
+User** data_normalize(User** user,int user_number){
+
+	for(int i=0; i<user_number; i++)
+	{
+		user[i]->normalize();
+	}
+
+}
+
+void data_preprocessing(string file1,string file2,string file3,string out,string out_norm){
 
 	Tweet** T = read_tweets(file1);
 	Coin** C = read_coins(file2);
@@ -239,6 +248,7 @@ void data_preprocessing(string file1,string file2,string file3,string out){
 
 	ofstream outfile(out);
 
+	// write user vectors into a csv file
 	outfile<<" "<<"\t";
 	for(int i=0; i<COIN_NUMBER; i++)
 	{
@@ -253,6 +263,31 @@ void data_preprocessing(string file1,string file2,string file3,string out){
 			outfile<<users[i]->vector[k]<<"\t";
 		}
 		outfile<<endl;
+	}
+
+
+	data_normalize(users,user_number);
+
+	ofstream outfile2(out_norm);
+
+	// write user vectors into a csv file
+	outfile2<<" "<<"\t";
+	for(int i=0; i<COIN_NUMBER; i++)
+	{
+		outfile2<<C[i]->name<<"\t";
+	}
+	outfile2<<endl;
+	for(int i=0; i<user_number; i++)
+	{
+		if(users[i]->flag==1)
+		{
+		outfile2<<users[i]->id<<"\t";
+		for(int k=0; k<COIN_NUMBER; k++)
+		{
+			outfile2<<users[i]->vector[k]<<"\t";
+		}
+		outfile2<<endl;
+		}
 	}
 
 }
