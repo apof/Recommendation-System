@@ -89,6 +89,7 @@ public:
 	long double* vector;
 	int* flag_vector;
 	int flag;
+	long double mean_value;
 
 	User(int Id){
 		id = Id;
@@ -127,6 +128,8 @@ public:
 				flag = 1;
 			}
 
+			if(flag_vector[i]==0)
+				vector[i]  = std::numeric_limits<double>::infinity();
 		}
 
 		mean_val = mean_val/num;
@@ -134,11 +137,13 @@ public:
 		if(flag==1)
 		{
 
+		mean_value = mean_val;
+
 		for(int i = 0; i<COIN_NUMBER; i++)
 		{
-			if(flag_vector[i]==1)
+			if(flag_vector[i]==0)
 			{
-				vector[i] -= mean_val;
+				vector[i] = mean_val;
 			}
 
 		}

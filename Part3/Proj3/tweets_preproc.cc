@@ -217,7 +217,7 @@ User** data_normalize(User** user,int user_number){
 
 }
 
-void data_preprocessing(string file1,string file2,string file3,string out,string out_norm){
+void data_preprocessing(string file1,string file2,string file3,string out_norm,string input_flags){
 
 	Tweet** T = read_tweets(file1);
 	Coin** C = read_coins(file2);
@@ -246,10 +246,14 @@ void data_preprocessing(string file1,string file2,string file3,string out,string
 
 	User** users = create_vectors(T,user_number,coin_lex);
 
-	ofstream outfile(out);
+	data_normalize(users,user_number);
+
+	ofstream outfile(out_norm);
+	ofstream outfile2(input_flags);
 
 	// write user vectors into a csv file
-	outfile<<" "<<"\t";
+	outfile<<"mean_val"<<"\t";
+	outfile<<"user_id"<<"\t";
 	for(int i=0; i<COIN_NUMBER; i++)
 	{
 		outfile<<C[i]->name<<"\t";
@@ -257,35 +261,16 @@ void data_preprocessing(string file1,string file2,string file3,string out,string
 	outfile<<endl;
 	for(int i=0; i<user_number; i++)
 	{
+		if(users[i]->flag==1)
+		{
+		outfile<<users[i]->mean_value<<"\t";
 		outfile<<users[i]->id<<"\t";
 		for(int k=0; k<COIN_NUMBER; k++)
 		{
+			outfile2<<users[i]->flag_vector[k]<<"\t";
 			outfile<<users[i]->vector[k]<<"\t";
 		}
 		outfile<<endl;
-	}
-
-
-	data_normalize(users,user_number);
-
-	ofstream outfile2(out_norm);
-
-	// write user vectors into a csv file
-	outfile2<<" "<<"\t";
-	for(int i=0; i<COIN_NUMBER; i++)
-	{
-		outfile2<<C[i]->name<<"\t";
-	}
-	outfile2<<endl;
-	for(int i=0; i<user_number; i++)
-	{
-		if(users[i]->flag==1)
-		{
-		outfile2<<users[i]->id<<"\t";
-		for(int k=0; k<COIN_NUMBER; k++)
-		{
-			outfile2<<users[i]->vector[k]<<"\t";
-		}
 		outfile2<<endl;
 		}
 	}
