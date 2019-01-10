@@ -14,13 +14,14 @@
 #include <unordered_map>
 #include <cmath>
 
-#define DATA_VECTOR_SIZE 203 
+#define DATA_VECTOR_SIZE 100
 #define w 350
 #define COIN_NUMBER 100
-#define DATA_NUMBER 5000
-#define TWEET_NUMBER 5000
+#define DATA_NUMBER 34192
+#define TWEET_NUMBER 161972
 #define MAX_R_RANGE 800
-#define MAX_ITERS 100
+#define MAX_ITERS 50
+#define PP 20
 
 extern int K;
 
@@ -38,5 +39,6 @@ int hammingDistance(int,int);
 int* next_probe(int&,int,int*);
 void int_to_bin_digit(unsigned int, int,int*);
 int same_v(long double* , long double*);
+void print_config(string,string,string,string,string,string,string,char*,int,int,int,int,int,int,int,int);
 
 #endif

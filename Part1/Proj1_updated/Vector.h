@@ -11,6 +11,9 @@ public:
 	long double* doubleVecArray;
 	int vector_dimension;
 	string id;
+	int int_id;
+	long double mean_value;
+	int* flag;
 
 	MyVector(string,string);
 	~MyVector();
@@ -30,6 +33,7 @@ public:
 
 	void set_vector(long double*);
 	long double compute_distance(MyVector*,char*);
+	void set_flag(int* f)  { flag = f; }
 
 };
 

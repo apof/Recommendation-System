@@ -124,7 +124,7 @@ int convert_bits_to_int(int* g)
 long double cosine_similarity(long double *A, long double *B)
 {
 
-    if(same_v(A,B)) return 0.0;
+    if(same_v(A,B)) { return 0.0; }
     else
     {
     long double dot = 0.0, denom_a = 0.0, denom_b = 0.0 ;
@@ -204,6 +204,24 @@ int same_v(long double* v1, long double* v2)
   }
 
   return 1;
+}
+
+void print_config(string vader_lexicon,string tweet_dataset,string coin_lexicon,string input_file,string input_flags,string output_file,string config_file,char* metric,int l,int cluster_num,int initialization,int update,int assignment,int complete,int Problem,int Recommendation)
+{
+  cout<<"vader_lexicon: "<<vader_lexicon<<endl;
+  cout<<"tweet_dataset: "<<tweet_dataset<<endl;
+  cout<<"coin_lexicon: "<<coin_lexicon<<endl;
+  cout<<"input_file: "<<input_file<<endl;
+  cout<<"input_flags: "<<input_flags<<endl;
+  cout<<"output_file: "<<output_file<<endl;
+  cout<<"metric: "<<metric<<endl;
+  cout<<"l: "<<l<<endl;
+  cout<<"cluster_num: "<<cluster_num<<endl;
+  cout<<"initialization: "<<initialization<<endl;
+  cout<<"assignment: "<<assignment<<endl;
+  cout<<"complete: "<<complete<<endl;
+  cout<<"Problem: "<<Problem<<endl;
+  cout<<"Recommendation: "<<Recommendation<<endl;
 }
 
 

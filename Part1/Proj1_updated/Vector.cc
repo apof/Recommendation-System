@@ -26,22 +26,33 @@
 		if (doubleVecArray != NULL)
 		{
 		delete []doubleVecArray;
+		delete []flag;
 		doubleVecArray = NULL;
+		flag = NULL;
 		}
 	}
 
 	void MyVector::intVectorInitialization(char buffer[]) {
 
-		char* pch = strtok(buffer," ,");
-		pch = strtok(NULL," ,");
+		char * e1;
+		char* pch = strtok(buffer,"\t");
+		mean_value = strtold(pch, &e1);
+
+		pch = strtok(NULL,"\t");
+		int_id = atoi(pch);
+		
+		pch = strtok(NULL,"\t");
 		int index = 0;
 	
     	while(pch!=NULL){
-    	char * e;
+    	char * e2;
 
-    	doubleVecArray[index] = strtold(pch, &e);
+    	long double n = strtold(pch, &e2);
+    	if(n==(-0))
+    		n = 0.0;
+    	doubleVecArray[index] = n;
     	index++;
-    	pch = strtok (NULL, " ,");
+    	pch = strtok (NULL, "\t");
     	}
 
     	if (index!=DATA_VECTOR_SIZE)
@@ -77,7 +88,11 @@
 			for(int i=0; i<vector_dimension; i++)
 				cout<<doubleVecArray[i]<<" ";
 				cout<<endl;
-				cout<<"-----------------Vector dimension--------        "<< vector_dimension <<endl;
+			for(int i=0; i<vector_dimension; i++)
+				cout<<flag[i]<<" ";
+				cout<<endl;
+			cout<<"-----------------Vector dimension--------        "<< vector_dimension <<endl;
+
 		}
 
 	}
