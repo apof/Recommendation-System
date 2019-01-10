@@ -176,7 +176,9 @@ public:
 
 		for(int i=0; i<cluster_number; i++){
 
-			total += clusters[i]->Kmeans_update(iteration);
+			long double t = clusters[i]->Kmeans_update(iteration);
+			//cout<<t<<endl;
+			total += t;
 		}
 
 		return total;
@@ -259,7 +261,7 @@ public:
 			//flag = Pam_Improved_like_Lloyd_update();
 			flag = Pam_using_distances();
 
-		cout<<"Iter: "<<iter<<" "<<flag<<endl;
+		cout<<iter<<" "<<flag<<endl;
 
 		iter++;
 	}

@@ -71,7 +71,7 @@ void Cluster_Table::kmeans_plus_plus_initialization(MyVector** v){
 	for(int t=1; t<cluster_number; t++)
 	{
 
-	cout<<t<<endl;
+	//cout<<t<<endl;
 
 	// compute all D: distance of every non centroid point from the closest centroid 
 	int index = 0;
@@ -416,6 +416,12 @@ long double Cluster::Kmeans_update(int iteration){
     //if (iteration!=1){
     //	delete center;
     //	center = NULL;
+    //}
+
+    //if(isnan(d))
+    //{
+    //	center->PrintVector();
+    //	median->PrintVector();
     //}
 
     center = median;
