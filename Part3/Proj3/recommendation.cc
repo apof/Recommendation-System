@@ -1,6 +1,6 @@
 #include "tweets_preproc.h"
-#include "../../Part1/Proj1_updated/HashTable.h"
-#include "../../Part2/Proj2_updated/cluster.h"
+#include "recomm_methods.h"
+
 int K;
 
 int main(int argc, char** argv){
@@ -15,7 +15,7 @@ string input_file;
 string input_flags;
 string output_file;
 string config_file;
-char* metric;
+char* metric_lsh;
 int l;
 int cluster_num;
 int initialization;
@@ -84,11 +84,11 @@ else
       pch = strtok(NULL," ");
       update = atoi(pch);
     }
-    else if (strcmp(pch,"metric:")==0)
+    else if (strcmp(pch,"metric_lsh:")==0)
     {
       pch = strtok(NULL," ");
-      metric = new char[strlen(pch) + 1];
-      strcpy(metric,pch);
+      metric_lsh = new char[strlen(pch) + 1];
+      strcpy(metric_lsh,pch);
     }
     else if (strcmp(pch,"vader_lexicon:")==0)
     {
@@ -148,9 +148,8 @@ else
     data_preprocessing(tweet_dataset,coin_lexicon,vader_lexicon,input_file,input_flags);
   }
 
-  print_config(vader_lexicon,tweet_dataset,coin_lexicon,input_file,input_flags,output_file,config_file,metric,l,cluster_num,initialization,update,assignment,complete,Problem,Recommendation);
+  print_config(vader_lexicon,tweet_dataset,coin_lexicon,input_file,input_flags,output_file,config_file,metric_lsh,l,cluster_num,initialization,update,assignment,complete,Problem,Recommendation);
 
-  ofstream outfile(output_file);
   ifstream inputfile(input_file);
   ifstream flagsfile(input_flags);
   
@@ -218,7 +217,6 @@ else
     vec_pointers[data_index]->set_flag(flag);
 
     data_index++;
-
   }
 
 
@@ -228,27 +226,12 @@ for(int i=0; i<DATA_NUMBER; i++)
 for(int i=0; i<COIN_NUMBER; i++)
   cout<<coin_array[i]<<endl;
 
-/*
 if(Problem==1 && Recommendation==1)
 {
-
-  LSH_Tables* Tables = new LSH_Tables(l);
-
-  for(int i=0; i<DATA_NUMBER; i++)
-  {
-    Tables->insert_cosine(vec_pointers[i]);
-  }
-
-  for(int i=0; i<DATA_NUMBER; i++)
-  {
-  list<MyVector*> l = Tables->range_search_cosine(vec_pointers[i],0.0005);
-  cout<<l.size()<<endl;
-  }
-
+  //recommendation_based_on_lsh(vec_pointers,l,metric_lsh,coin_array,output_file);
 }
-*/
-  /*
-  Cluster_Table* Ctable = new Cluster_Table(cluster_num,metric,initialization,assignment,update,l,complete);
+
+  /*Cluster_Table* Ctable = new Cluster_Table(cluster_num,metric,initialization,assignment,update,l,complete);
 
   clock_t start,end;
   start = clock();
@@ -256,16 +239,16 @@ if(Problem==1 && Recommendation==1)
   end = clock();
   long double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
   Ctable->compute_silhouette(outfile,cpu_time_used);
-
- */
-
+  */
   for(int i=0; i<DATA_NUMBER; i++)
     if(vec_pointers[i]!=NULL) { delete vec_pointers[i]; vec_pointers[i] = NULL; }
     delete []vec_pointers;
 
+  //delete Ctable;
+
   inputfile.close();
   configfile.close();
-  outfile.close();
+  configfile.close();
 }
 
 return 0;
