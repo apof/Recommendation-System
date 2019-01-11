@@ -13,6 +13,8 @@
 #include <list>
 #include <unordered_map>
 #include <cmath>
+#include <algorithm>
+
 
 #define DATA_VECTOR_SIZE 100
 #define w 350
@@ -21,7 +23,8 @@
 #define TWEET_NUMBER 161972
 #define MAX_R_RANGE 800
 #define MAX_ITERS 50
-#define PP 20
+#define PN 20
+#define USERS_TO_RECOMM 20
 
 extern int K;
 

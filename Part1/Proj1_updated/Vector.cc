@@ -74,7 +74,7 @@
 
 	void MyVector::PrintVector(){
 
-		cout<<"-->"<<id<<endl;
+		cout<<"-->"<<id<<" "<<int_id<<" "<<mean_value<<endl;
 
 		if (intVecArray!=NULL)
 		{
