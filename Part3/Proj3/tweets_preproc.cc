@@ -221,8 +221,6 @@ User** create_iconic_users(User** users,int user_number,string clustering_file){
 
 	ifstream inputfile(clustering_file);
 
-	cout<<clustering_file<<endl;
-
 	MyVector** vec_pointers =  new MyVector*[CLUSTERING_FILE_SIZE];
   	for(int i=0; i<CLUSTERING_FILE_SIZE; i++)
     	vec_pointers[i] = NULL;

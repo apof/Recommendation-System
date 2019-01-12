@@ -4,6 +4,12 @@
 #include "../../Part1/Proj1_updated/Vector.h"
 #include "../../Part2/Proj2_updated/cluster.h"
 
+#define COIN_NUMBER 100
+#define ICONIC_USERS 150
+#define ICONIC_MODE 0
+#define CLUSTERING_FILE_SIZE 5000
+#define TWEET_NUMBER 161972
+
 
 class Tweet {
 

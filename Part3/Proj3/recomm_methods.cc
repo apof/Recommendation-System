@@ -81,7 +81,7 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 
 	// make prediction for every coin of the user
 	// at the same time we normalize the values (two different normalizations for known and unknown coins)
-	for(int i=0; i<COIN_NUMBER; i++)
+	for(int i=0; i<DATA_VECTOR_SIZE; i++)
 	{
 		if(prediction_node.flag[i]==1)
 			prediction_node.val[i] -= prediction_node.mean_val;
@@ -100,7 +100,7 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 
 
 	// create a result list
-	for(int i=0; i<COIN_NUMBER; i++)
+	for(int i=0; i<DATA_VECTOR_SIZE; i++)
 	{
 		result_node n(i,prediction_node.val[i],prediction_node.flag[i]);
 

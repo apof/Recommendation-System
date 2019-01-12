@@ -7,166 +7,18 @@ int main(int argc, char** argv){
 
 srand(time(NULL));
 
-string vader_lexicon;
-string tweet_dataset;
-string coin_lexicon;
-
-string input_file;
-string input_flags;
-string output_file;
-string config_file;
-string clustering_file;
-char* metric_lsh;
-char* metric_clustering;
-int l;
-int cluster_num;
-int initialization;
-int update;
-int assignment;
-
-int Problem;
-int Recommendation;
-
-
-// if execution is ./recommendation -create the create dataset
-if(argc!=3 && argc!=4)
-  cout<<"Wrong arguments!"<<endl;
-else
-{
-  config_file = argv[2];
-  ifstream configfile(config_file);
 
   // default k,l values
   K=4;
-  l=5;
+  int l=5;
+  int cluster_num = 20;
+  int Recommendation = 2;
 
   char buffer[12000];
 
-  while (configfile.getline(buffer, sizeof(buffer)))
-  {
-    char* pch = strtok(buffer," ");
-    if(strcmp(pch,"number_of_clusters:")==0)
-    {
-      pch = strtok(NULL," ");
-      cluster_num = atoi(pch);
-    }
-    if(strcmp(pch,"Problem:")==0)
-    {
-      pch = strtok(NULL," ");
-      Problem = atoi(pch);
-    }
-    if(strcmp(pch,"Recommendation:")==0)
-    {
-      pch = strtok(NULL," ");
-      Recommendation = atoi(pch);
-    }
-    else if(strcmp(pch,"number_of_hashtables:")==0)
-    {
-      pch = strtok(NULL," ");
-      l = atoi(pch);
-    }
-    else if(strcmp(pch,"number_of_hashfunctions:")==0)
-    {
-      pch = strtok(NULL," ");
-      K = atoi(pch);
-    }
-    else if (strcmp(pch,"assignment:")==0)
-    {
-      pch = strtok(NULL," ");
-      assignment = atoi(pch);
-    }
-    else if (strcmp(pch,"initialization:")==0)
-    {
-      pch = strtok(NULL," ");
-      initialization = atoi(pch);
-    }
-    else if (strcmp(pch,"update:")==0)
-    {
-      pch = strtok(NULL," ");
-      update = atoi(pch);
-    }
-    else if (strcmp(pch,"metric_lsh:")==0)
-    {
-      pch = strtok(NULL," ");
-      metric_lsh = new char[strlen(pch) + 1];
-      strcpy(metric_lsh,pch);
-    }
-    else if (strcmp(pch,"metric_clustering:")==0)
-    {
-      pch = strtok(NULL," ");
-      metric_clustering = new char[strlen(pch) + 1];
-      strcpy(metric_clustering,pch);
-    }
-    else if (strcmp(pch,"vader_lexicon:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      vader_lexicon = str;
-    }
-    else if (strcmp(pch,"coin_lexicon:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      coin_lexicon = str;
-    }
-    else if (strcmp(pch,"tweet_dataset:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      tweet_dataset = str;
-    }
-    else if (strcmp(pch,"input_file:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      input_file = str;
-    }
-    else if (strcmp(pch,"output_file:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      output_file = str;
-    }
-    else if (strcmp(pch,"input_flags:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      input_flags = str;
-    }
-    else if (strcmp(pch,"clustering_file:")==0)
-    {
-      pch = strtok(NULL," ");
-      char* vd = new char[strlen(pch) + 1];
-      strcpy(vd,pch);
-      string str(vd);
-      clustering_file = str;
-    }
-
-
-
-  }
-
-  if((argc==4 && (strcmp(argv[3],"-create")==0)))
-  {
-    cout<<"Creating Dataset.."<<endl;
-    data_preprocessing(tweet_dataset,coin_lexicon,vader_lexicon,input_file,input_flags,clustering_file);
-  }
-  else
-  {
-
-  //print_config(vader_lexicon,tweet_dataset,coin_lexicon,input_file,input_flags,output_file,config_file,metric_lsh,l,cluster_num,initialization,update,assignment,Problem,Recommendation);
+  string input_file = argv[2];
+  string input_flags = argv[4];
+  string output_file = argv[6];
 
   ifstream inputfile(input_file);
   ifstream flagsfile(input_flags);
@@ -174,7 +26,6 @@ else
   MyVector** vec_pointers =  new MyVector*[TOTAL_DATA_NUMBER];
   for(int i=0; i<TOTAL_DATA_NUMBER; i++)
     vec_pointers[i] = NULL;
-
 
   int data_index = -1;
 
@@ -220,6 +71,7 @@ else
 
   while (flagsfile.getline(buffer, sizeof(buffer)))
   {
+
     int* flag = new int[COIN_NUMBER];
     int flag_index = 0;
 
@@ -237,19 +89,18 @@ else
     data_index++;
   }
 
-/*for(int i=0; i<DATA_NUMBER; i++)
+for(int i=0; i<DATA_NUMBER; i++)
   vec_pointers[i]->PrintVector();
 for(int i=0; i<COIN_NUMBER; i++)
   cout<<coin_array[i]<<endl;
-*/
 
-if(Problem==1 && Recommendation==1)
+if(Recommendation==1)
 {
-  recommendation_based_on_lsh(vec_pointers,l,metric_lsh,coin_array,output_file);
+  recommendation_based_on_lsh(vec_pointers,l,"cosine",coin_array,output_file);
 }
-else if(Problem==1 && Recommendation==2)
+else if(Recommendation==2)
 {
-  recommendation_based_on_clustering(vec_pointers,l,metric_clustering,coin_array,output_file,cluster_num,initialization,assignment,update);
+  recommendation_based_on_clustering(vec_pointers,l,"eucledian",coin_array,output_file,cluster_num,1,1,1);
 }
 
   
@@ -260,11 +111,6 @@ else if(Problem==1 && Recommendation==2)
 
   inputfile.close();
   flagsfile.close();
-  configfile.close();
-
-}
-
-}
 
 return 0;
 }

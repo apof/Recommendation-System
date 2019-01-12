@@ -5,6 +5,8 @@
 #include "../../Part1/Proj1_updated/HashTable.h"
 #include "../../Part2/Proj2_updated/cluster.h"
 
+#define PN 20
+#define USERS_TO_RECOMM 50
 
 class help_node{
 
@@ -18,10 +20,10 @@ public:
 
 	help_node(MyVector* v,long double d){
 
-		val = new long double[COIN_NUMBER];
-		flag = new int[COIN_NUMBER];
+		val = new long double[DATA_VECTOR_SIZE];
+		flag = new int[DATA_VECTOR_SIZE];
 
-		for(int i=0; i<COIN_NUMBER; i++)
+		for(int i=0; i<DATA_VECTOR_SIZE; i++)
 		{
 			val[i] = v->doubleVecArray[i];
 			flag[i] = v->flag[i];
