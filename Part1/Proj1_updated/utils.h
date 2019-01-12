@@ -18,13 +18,13 @@
 
 #define DATA_VECTOR_SIZE 100
 #define w 350
-#define COIN_NUMBER 100
-#define DATA_NUMBER 34192
-#define TWEET_NUMBER 161972
 #define MAX_R_RANGE 800
 #define MAX_ITERS 50
-#define PN 20
-#define USERS_TO_RECOMM 20
+
+
+#define DATA_NUMBER 150
+#define TOTAL_DATA_NUMBER 150
+
 
 extern int K;
 
@@ -42,6 +42,6 @@ int hammingDistance(int,int);
 int* next_probe(int&,int,int*);
 void int_to_bin_digit(unsigned int, int,int*);
 int same_v(long double* , long double*);
-void print_config(string,string,string,string,string,string,string,char*,int,int,int,int,int,int,int,int);
+void print_config(string,string,string,string,string,string,string,char*,int,int,int,int,int,int,int);
 
 #endif
