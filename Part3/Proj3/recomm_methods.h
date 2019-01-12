@@ -18,10 +18,10 @@ public:
 
 	help_node(MyVector* v,long double d){
 
-		val = new long double[DATA_VECTOR_SIZE];
-		flag = new int[DATA_VECTOR_SIZE];
+		val = new long double[COIN_NUMBER];
+		flag = new int[COIN_NUMBER];
 
-		for(int i=0; i<DATA_VECTOR_SIZE; i++)
+		for(int i=0; i<COIN_NUMBER; i++)
 		{
 			val[i] = v->doubleVecArray[i];
 			flag[i] = v->flag[i];
@@ -70,8 +70,8 @@ struct result_node_Comparator
 	bool operator ()(const result_node & node1, const result_node & node2)
 	{
 		if(node1.prediction == node2.prediction)
-			return node1.prediction < node2.prediction;
-		return node1.prediction < node2.prediction;
+			return node1.prediction > node2.prediction;
+		return node1.prediction > node2.prediction;
  
 	}
 };
@@ -80,7 +80,7 @@ list<MyVector*> find_single_users(list<MyVector*>);
 list<help_node> select_top_neighbors(MyVector*,list<MyVector*>,char* metric);
 list<result_node> make_prediction(list<help_node> nodes, help_node prediction_node);
 void recommendation_based_on_lsh(MyVector**,int,char*,string* coins,string);
-
+void recommendation_based_on_clustering(MyVector**,int,char*,string* coins,string,int,int,int,int);
 
 #endif
 

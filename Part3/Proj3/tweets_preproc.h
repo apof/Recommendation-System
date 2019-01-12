@@ -2,6 +2,8 @@
 #define TWEETS_PREPROC
 
 #include "../../Part1/Proj1_updated/Vector.h"
+#include "../../Part2/Proj2_updated/cluster.h"
+
 
 class Tweet {
 
@@ -177,10 +179,12 @@ public:
 Tweet** read_tweets(string);
 Coin** read_coins(string);
 unordered_map<string, double> read_lexicon(string);
-void data_preprocessing(string,string,string,string,string);
+void data_preprocessing(string,string,string,string,string,string);
 unordered_map<string,int> convert_coins_to_lexicon(Coin**);
 void stand_out_info_coins(Tweet**);
 User** create_vectors(Tweet**,int,unordered_map<string,int>);
-User** data_normalize(User**,int);
+void data_normalize(User**,int);
+User** create_iconic_users(User**,int,string);
+
 
 #endif

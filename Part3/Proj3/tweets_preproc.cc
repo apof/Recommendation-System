@@ -208,7 +208,7 @@ User** create_vectors(Tweet** T,int user_number,unordered_map<string,int> coin_l
 
 }
 
-User** data_normalize(User** user,int user_number){
+void data_normalize(User** user,int user_number){
 
 	for(int i=0; i<user_number; i++)
 	{
@@ -217,7 +217,110 @@ User** data_normalize(User** user,int user_number){
 
 }
 
-void data_preprocessing(string file1,string file2,string file3,string out_norm,string input_flags){
+User** create_iconic_users(User** users,int user_number,string clustering_file){
+
+	ifstream inputfile(clustering_file);
+
+	cout<<clustering_file<<endl;
+
+	MyVector** vec_pointers =  new MyVector*[CLUSTERING_FILE_SIZE];
+  	for(int i=0; i<CLUSTERING_FILE_SIZE; i++)
+    	vec_pointers[i] = NULL;
+
+	int data_index = 0;
+
+	char buffer[15000];
+
+  	while (inputfile.getline(buffer, sizeof(buffer)))
+  	{
+
+  		string id = to_string(data_index);
+    	id = "ID"+id;
+    	string type("double");
+
+    	vec_pointers[data_index] = new MyVector(type,id);
+
+    	char dest[10000] = "0.00\t";
+    	strcat(dest,buffer);
+
+    	vec_pointers[data_index]->intVectorInitialization(dest);
+
+    	data_index++;
+
+	 }
+
+
+	User** ic_users = new User*[ICONIC_USERS];
+	for(int i=0; i<ICONIC_USERS; i++)
+		ic_users[i] = new User(i+1);
+
+	cout<<"Clustering to create iconic users.."<<endl;
+
+	Cluster_Table* Ctable = new Cluster_Table(ICONIC_USERS,"cosine",1,1,1,5,0);
+
+	int flag = 1;
+
+	Cluster** clusters;
+
+
+	while(flag!=0)
+	{
+  	Ctable->clustering(vec_pointers);
+  	clusters = Ctable->get_clusters();
+
+  	int fl = 1;
+  	for(int p=0; p<ICONIC_USERS; p++)
+  	{
+  		if(clusters[p]->get_list().size()==0)
+  			fl =0;
+
+  	}
+
+  	if(fl==1)
+  		flag=0;
+  	else
+  		cout<<"Zero cluster-Repeating clustering!"<<endl;
+
+  	}
+
+  	clusters = Ctable->get_clusters();
+
+
+  	for(int i=0; i<ICONIC_USERS; i++)
+  	{
+  		for(auto elem : clusters[i]->get_list())
+  		{
+  			
+  				for(int k=0; k<user_number; k++)
+  				{
+
+  					if(users[k]->id == elem.Vector->int_id)
+  					{
+  						for(int j=0; j<COIN_NUMBER; j++)
+  						{
+  							if(users[k]->flag_vector[j]==1)
+  							{
+  								ic_users[i]->flag_vector[j]=1;
+  								ic_users[i]->vector[j] += users[k]->vector[j];
+  							}
+
+  						}
+
+  					}
+  				}
+  			
+  		}
+  	}
+
+  	for(int i=0; i<user_number; i++)
+  		delete users[i];
+  	delete users;
+
+  	return ic_users;
+
+}
+
+void data_preprocessing(string file1,string file2,string file3,string out_norm,string input_flags,string clustering_file){
 
 	Tweet** T = read_tweets(file1);
 	Coin** C = read_coins(file2);
@@ -245,6 +348,12 @@ void data_preprocessing(string file1,string file2,string file3,string out_norm,s
 	}*/
 
 	User** users = create_vectors(T,user_number,coin_lex);
+
+	if(ICONIC_MODE==1){
+
+		users = create_iconic_users(users,user_number,clustering_file);
+		user_number = ICONIC_USERS;
+	}
 
 	data_normalize(users,user_number);
 
@@ -274,5 +383,18 @@ void data_preprocessing(string file1,string file2,string file3,string out_norm,s
 		outfile2<<endl;
 		}
 	}
+
+	for(int i=0; i<TWEET_NUMBER; i++)
+		delete T[i];
+	delete []T;
+
+	for(int i=0; i<COIN_NUMBER; i++)
+		delete C[i];
+	delete []C;
+
+	for(int i=0; i<user_number; i++)
+		delete users[i];
+	delete []users;
+
 
 }

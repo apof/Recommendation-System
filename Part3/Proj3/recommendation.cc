@@ -15,20 +15,21 @@ string input_file;
 string input_flags;
 string output_file;
 string config_file;
+string clustering_file;
 char* metric_lsh;
+char* metric_clustering;
 int l;
 int cluster_num;
 int initialization;
 int update;
 int assignment;
-int complete;
 
 int Problem;
 int Recommendation;
 
 
 // if execution is ./recommendation -create the create dataset
-if(argc!=3 && argc!=4 && argc!= 5)
+if(argc!=3 && argc!=4)
   cout<<"Wrong arguments!"<<endl;
 else
 {
@@ -90,6 +91,12 @@ else
       metric_lsh = new char[strlen(pch) + 1];
       strcpy(metric_lsh,pch);
     }
+    else if (strcmp(pch,"metric_clustering:")==0)
+    {
+      pch = strtok(NULL," ");
+      metric_clustering = new char[strlen(pch) + 1];
+      strcpy(metric_clustering,pch);
+    }
     else if (strcmp(pch,"vader_lexicon:")==0)
     {
       pch = strtok(NULL," ");
@@ -138,23 +145,34 @@ else
       string str(vd);
       input_flags = str;
     }
+    else if (strcmp(pch,"clustering_file:")==0)
+    {
+      pch = strtok(NULL," ");
+      char* vd = new char[strlen(pch) + 1];
+      strcpy(vd,pch);
+      string str(vd);
+      clustering_file = str;
+    }
+
 
 
   }
 
-  if((argc==4 && (strcmp(argv[3],"-create")==0)) || (argc==5))
+  if((argc==4 && (strcmp(argv[3],"-create")==0)))
   {
     cout<<"Creating Dataset.."<<endl;
-    data_preprocessing(tweet_dataset,coin_lexicon,vader_lexicon,input_file,input_flags);
+    data_preprocessing(tweet_dataset,coin_lexicon,vader_lexicon,input_file,input_flags,clustering_file);
   }
+  else
+  {
 
-  print_config(vader_lexicon,tweet_dataset,coin_lexicon,input_file,input_flags,output_file,config_file,metric_lsh,l,cluster_num,initialization,update,assignment,complete,Problem,Recommendation);
+  //print_config(vader_lexicon,tweet_dataset,coin_lexicon,input_file,input_flags,output_file,config_file,metric_lsh,l,cluster_num,initialization,update,assignment,Problem,Recommendation);
 
   ifstream inputfile(input_file);
   ifstream flagsfile(input_flags);
   
-  MyVector** vec_pointers =  new MyVector*[DATA_NUMBER];
-  for(int i=0; i<DATA_NUMBER; i++)
+  MyVector** vec_pointers =  new MyVector*[TOTAL_DATA_NUMBER];
+  for(int i=0; i<TOTAL_DATA_NUMBER; i++)
     vec_pointers[i] = NULL;
 
 
@@ -219,36 +237,33 @@ else
     data_index++;
   }
 
-
-
-for(int i=0; i<DATA_NUMBER; i++)
+/*for(int i=0; i<DATA_NUMBER; i++)
   vec_pointers[i]->PrintVector();
 for(int i=0; i<COIN_NUMBER; i++)
   cout<<coin_array[i]<<endl;
+*/
 
 if(Problem==1 && Recommendation==1)
 {
-  //recommendation_based_on_lsh(vec_pointers,l,metric_lsh,coin_array,output_file);
+  recommendation_based_on_lsh(vec_pointers,l,metric_lsh,coin_array,output_file);
+}
+else if(Problem==1 && Recommendation==2)
+{
+  recommendation_based_on_clustering(vec_pointers,l,metric_clustering,coin_array,output_file,cluster_num,initialization,assignment,update);
 }
 
-  /*Cluster_Table* Ctable = new Cluster_Table(cluster_num,metric,initialization,assignment,update,l,complete);
-
-  clock_t start,end;
-  start = clock();
-  Ctable->clustering(vec_pointers);
-  end = clock();
-  long double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-  Ctable->compute_silhouette(outfile,cpu_time_used);
-  */
-  for(int i=0; i<DATA_NUMBER; i++)
+  
+  for(int i=0; i<TOTAL_DATA_NUMBER; i++)
     if(vec_pointers[i]!=NULL) { delete vec_pointers[i]; vec_pointers[i] = NULL; }
     delete []vec_pointers;
 
-  //delete Ctable;
 
   inputfile.close();
+  flagsfile.close();
   configfile.close();
-  configfile.close();
+
+}
+
 }
 
 return 0;
