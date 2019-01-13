@@ -1,0 +1,29 @@
+# In order to execute this "Makefile.lsh" just type "make -f Makefile.lsh" 
+
+OBJS 	= cube.o HyperCube.o Vector.o VectorList.o utils.o
+SOURCE	= cube.cc HyperCube.cc Vector.cc VectorList.cc utils.cc
+HEADER  = VectorList.h utils.h Vector.h HyperCube.h
+OUT  	= cube
+CC	= g++
+FLAGS   = -c
+# -c flag generates object code for separate files
+
+all: $(OBJS)
+	$(CC) -std=c++11  $(OBJS) -o $(OUT)
+
+# create/compile the individual files >>separately<<
+cube.o: cube.cc
+	$(CC) -std=c++11 $(FLAGS) cube.cc
+HyperCube.o: HyperCube.cc
+	$(CC) -std=c++11 $(FLAGS) HyperCube.cc
+Vector.o: Vector.cc
+	$(CC) -std=c++11 $(FLAGS) Vector.cc
+VectorList.o: VectorList.cc
+	$(CC) -std=c++11 $(FLAGS) VectorList.cc
+utils.o: utils.cc
+	$(CC) -std=c++11 $(FLAGS) utils.cc
+
+
+# clean house
+clean:
+	rm -f $(OBJS) $(OUT)

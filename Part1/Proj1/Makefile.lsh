@@ -1,0 +1,28 @@
+# In order to execute this "Makefile.lsh" just type "make -f Makefile.lsh" 
+
+OBJS 	= lsh.o HashTable.o Vector.o VectorList.o utils.o
+SOURCE	= lsh.cc HashTable.cc Vector.cc VectorList.cc utils.cc
+HEADER  = VectorList.h utils.h Vector.h HashTable.h
+OUT  	= lsh
+CC	= g++
+FLAGS   = -c
+# -c flag generates object code for separate files
+
+all: $(OBJS)
+	$(CC) -std=c++11  -o $(OUT) $(OBJS) 
+
+# create/compile the individual files >>separately<<
+lsh.o: lsh.cc
+	$(CC) -std=c++11 $(FLAGS) lsh.cc
+HashTable.o: HashTable.cc
+	$(CC) -std=c++11 $(FLAGS) HashTable.cc
+Vector.o: Vector.cc
+	$(CC) -std=c++11 $(FLAGS) Vector.cc
+VectorList.o: VectorList.cc
+	$(CC) -std=c++11 $(FLAGS) VectorList.cc
+utils.o: utils.cc
+	$(CC) -std=c++11 $(FLAGS) utils.cc
+
+# clean house
+clean:
+	rm -f $(OBJS) $(OUT)
