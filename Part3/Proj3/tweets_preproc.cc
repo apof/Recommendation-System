@@ -217,7 +217,7 @@ void data_normalize(User** user,int user_number){
 
 }
 
-User** create_iconic_users(User** users,int user_number,string clustering_file){
+User** create_iconic_users(User** users,Tweet** T,int user_number,string clustering_file,unordered_map<string,int> coin_lex){
 
 	ifstream inputfile(clustering_file);
 
@@ -284,25 +284,29 @@ User** create_iconic_users(User** users,int user_number,string clustering_file){
   	clusters = Ctable->get_clusters();
 
 
+  	// cretae iconic users
   	for(int i=0; i<ICONIC_USERS; i++)
   	{
+  		// for all tweets of every cluster
   		for(auto elem : clusters[i]->get_list())
   		{
-  			
-  				for(int k=0; k<user_number; k++)
+  				// sum up the twwet value based on our preprocessing on new iconic user's vector 
+  				for(int k=0; k<TWEET_NUMBER; k++)
   				{
 
-  					if(users[k]->id == elem.Vector->int_id)
+  					if(T[k]->tweet_id == elem.Vector->int_id)
   					{
-  						for(int j=0; j<COIN_NUMBER; j++)
-  						{
-  							if(users[k]->flag_vector[j]==1)
-  							{
-  								ic_users[i]->flag_vector[j]=1;
-  								ic_users[i]->vector[j] += users[k]->vector[j];
-  							}
 
-  						}
+  						for(auto c: T[k]->coins)
+						{
+
+						unordered_map<string,int>::iterator it;
+						it = coin_lex.find(c);
+
+						ic_users[i]->flag_vector[it->second] = 1;
+						ic_users[i]->vector[it->second] += T[k]->value; 
+
+						}
 
   					}
   				}
@@ -349,7 +353,7 @@ void data_preprocessing(string file1,string file2,string file3,string out_norm,s
 
 	if(ICONIC_MODE==1){
 
-		users = create_iconic_users(users,user_number,clustering_file);
+		users = create_iconic_users(users,T,user_number,clustering_file,coin_lex);
 		user_number = ICONIC_USERS;
 	}
 
