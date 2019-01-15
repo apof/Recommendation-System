@@ -64,19 +64,31 @@ list<help_node> select_top_neighbors(MyVector* v,list<MyVector*> l,char* metric)
 }
 
 
-list<result_node> make_prediction(list<help_node> nodes, help_node prediction_node){
+list<result_node> make_prediction(list<help_node> nodes, help_node prediction_node,int validation_mode){
+
+	if(validation_mode == 1)
+		prediction_node.set_unknown();
 
 	list<result_node> result_list;
+
+	/*for(auto nod : nodes){
+
+		nod.print_help_node();
+	}
+
+	cout<<"-------"<<endl;
+
+	prediction_node.print_help_node();*/
 
 	// compute total abs similarity and normalizing factor z
 	long double total_abs_similarity = 0.0;
 
 	for(auto elem : nodes)
 	{
-		total_abs_similarity += (1-elem.dist);
+		total_abs_similarity += abs(1-elem.dist);
 	}
 
-	long double z = 1/abs(total_abs_similarity);
+	long double z = 1/(total_abs_similarity);
 
 
 	// make prediction for every coin of the user
@@ -102,7 +114,7 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 	// create a result list
 	for(int i=0; i<DATA_VECTOR_SIZE; i++)
 	{
-		result_node n(i,prediction_node.val[i],prediction_node.flag[i]);
+		result_node n(i,prediction_node.val[i],prediction_node.flag[i],prediction_node.old_val[i]);
 
 		result_list.push_back(n);
 	}
@@ -110,7 +122,14 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 	// sort the list (descending order)
 	result_list.sort(result_node_Comparator());
 
+	/*for( auto r : result_list)
+	{
+		cout<<r.pos<<" "<<r.prediction<<" "<<r.flag<<endl;
+	}*/
 
+
+	if(validation_mode==0)
+	{
 	// return top 5 unknown coins
 	list<result_node> final_res;
 	int index = 1;
@@ -128,6 +147,9 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 	}
 
 	return final_res;
+	}
+	else
+		return result_list;
 
 	
 
@@ -153,13 +175,13 @@ void recommendation_based_on_lsh(MyVector** vec_pointers,int l,char* metric,stri
   	for(int i=0; i<USERS_TO_RECOMM; i++)
 	{
 		//find his top neighbors
-		list<MyVector*> range_users = find_single_users(Tables->range_search_cosine(vec_pointers[i],0.05));
+		list<MyVector*> range_users = find_single_users(Tables->range_search_cosine(vec_pointers[i],1.5));
   		list<help_node> nodes =  select_top_neighbors(vec_pointers[i],range_users,metric);
 
   		list<result_node> result_list;
   		if(nodes.size()!=0)
   		{
-  			result_list = make_prediction(nodes,help_node(vec_pointers[i],0));
+  			result_list = make_prediction(nodes,help_node(vec_pointers[i],0),0);
 
   			outfile<<"User "<<vec_pointers[i]->int_id<<" predictions: "<<" ";
 
@@ -229,7 +251,7 @@ void recommendation_based_on_clustering(MyVector** vec_pointers,int l,char* metr
 
   				if(nodes.size()!=0)
   				{
-  					result_list = make_prediction(nodes,help_node(vec_pointers[j],0));
+  					result_list = make_prediction(nodes,help_node(vec_pointers[j],0),0);
 
   					outfile<<"User "<<vec_pointers[j]->int_id<<" predictions: "<<" ";
 
@@ -251,4 +273,95 @@ void recommendation_based_on_clustering(MyVector** vec_pointers,int l,char* metr
   	delete Ctable;
 
   	outfile.close();
+}
+
+void validation_on_lsh(MyVector** vec_pointers,int l,char* metric)
+{
+
+	cout<<"Validation on lsh.."<<endl;
+
+	int start_index = 0;
+	int data_per_fold = DATA_NUMBER/10;
+	int end_index = DATA_NUMBER/10;
+
+	long double total_mae_of_fold = 0.0;
+
+	for(int i=0; i<10; i++)
+	{
+
+		cout<<"Fold "<<i+1<<"--Testing with data "<<start_index<<"-"<<end_index<<" training with the other"<<endl;
+
+		// insert training set into lsh tables
+		// training set and test set are different in every iteration
+		LSH_Tables* Tables = new LSH_Tables(l);
+		for(int i=0; i<DATA_NUMBER; i++)
+		{
+			if(i<start_index || i>end_index)
+			{
+				Tables->insert_cosine(vec_pointers[i]);
+			}
+  		}
+
+		long double mae_of_fold = 0.0;
+
+  		// for every user we want to predict its unknown coins
+  		for(int i=start_index; i<end_index; i++)
+		{
+
+			//find his top neighbors
+			list<MyVector*> range_users = find_single_users(Tables->range_search_cosine(vec_pointers[i],0.9));
+  			list<help_node> nodes =  select_top_neighbors(vec_pointers[i],range_users,metric);
+
+  			list<result_node> result_list;
+
+  			if(nodes.size()!=0)
+  			{  				
+  				result_list = make_prediction(nodes,help_node(vec_pointers[i],0),1);
+
+  				long double mae = 0.0;
+  				int num = 0;
+
+  				for(auto elem : result_list){
+
+  					if(elem.flag == 2){
+
+  						num++;
+  						mae += abs(elem.prediction - elem.old_val);
+  					}
+  				}
+
+  				if(num!=0)
+  				{
+
+  				mae = mae/num;
+
+  				mae_of_fold += mae;
+
+  				}
+
+  			}
+  			else
+  			{
+  				cout<<"No neighbors found for user: "<<vec_pointers[i]->int_id<<endl;
+  			}
+
+  		
+  		}
+
+  		mae_of_fold = mae_of_fold/(end_index - start_index);
+
+  		cout<<"mae of fold "<<mae_of_fold<<endl;
+
+  		total_mae_of_fold += mae_of_fold;
+  
+  		delete Tables;
+		
+
+		start_index += data_per_fold;
+		end_index += data_per_fold;
+	}
+
+	cout<<"Total mae: "<<total_mae_of_fold/10<<endl;
+
+	
 }
