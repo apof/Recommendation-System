@@ -190,7 +190,7 @@ unordered_map<string,int> convert_coins_to_lexicon(Coin**);
 void stand_out_info_coins(Tweet**);
 User** create_vectors(Tweet**,int,unordered_map<string,int>);
 void data_normalize(User**,int);
-User** create_iconic_users(User**,int,string);
+User** create_iconic_users(User**,Tweet**,int,string,unordered_map<string,int>);
 
 
 #endif
