@@ -11,10 +11,33 @@ srand(time(NULL));
   // default k,l values
   K=4;
   int l=5;
-  int cluster_num = 20;
-  int Recommendation = 2;
+  int cluster_num;
+  int Recommendation;
+
+  string config_file = argv[8];
+
+  ifstream configfile(config_file);
 
   char buffer[12000];
+
+
+  while (configfile.getline(buffer, sizeof(buffer)))
+  {
+  char* pch = strtok(buffer," ");
+
+  if(strcmp(pch,"Recommendation:")==0)
+  {
+    pch = strtok(NULL," ");
+    Recommendation = atoi(pch);
+  }
+  else if(strcmp(pch,"cluster_num:")==0)
+  {
+    pch = strtok(NULL," ");
+    cluster_num = atoi(pch);
+  }
+  }
+
+  //cout<<Recommendation<<" "<<cluster_num<<endl;
 
   string input_file = argv[2];
   string input_flags = argv[4];
@@ -89,18 +112,38 @@ srand(time(NULL));
     data_index++;
   }
 
-for(int i=0; i<DATA_NUMBER; i++)
+/*for(int i=0; i<DATA_NUMBER; i++)
   vec_pointers[i]->PrintVector();
 for(int i=0; i<COIN_NUMBER; i++)
   cout<<coin_array[i]<<endl;
-
+*/
+  
 if(Recommendation==1)
 {
-  recommendation_based_on_lsh(vec_pointers,l,"cosine",coin_array,output_file);
+  string str = "cosine";
+  char *cstr = new char[str.length() + 1];
+  strcpy(cstr, str.c_str());
+
+  if(argc!=10)
+    recommendation_based_on_lsh(vec_pointers,l,cstr,coin_array,output_file);
+  else
+    validation_on_lsh(vec_pointers,l,cstr);
+
+  delete []cstr;
 }
 else if(Recommendation==2)
 {
-  recommendation_based_on_clustering(vec_pointers,l,"eucledian",coin_array,output_file,cluster_num,1,1,1);
+  string str = "eucledian";
+  char *cstr = new char[str.length() + 1];
+  strcpy(cstr, str.c_str());
+
+  if(argc!=10)
+    recommendation_based_on_clustering(vec_pointers,l,cstr,coin_array,output_file,cluster_num,1,1,1);
+  else
+    validation_on_clustering(vec_pointers,l,cstr,cluster_num,1,1,1);
+
+  delete []cstr;
+
 }
 
   
@@ -111,6 +154,7 @@ else if(Recommendation==2)
 
   inputfile.close();
   flagsfile.close();
+  configfile.close();
 
 return 0;
 }

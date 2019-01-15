@@ -127,6 +127,14 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 		cout<<r.pos<<" "<<r.prediction<<" "<<r.flag<<endl;
 	}*/
 
+	// if we have few-iconic users recommend two coins instead of 5
+	int coins_to_recomm;
+	if(DATA_NUMBER<200)
+		coins_to_recomm = 2;
+	else
+		coins_to_recomm  = 5;
+
+
 
 	if(validation_mode==0)
 	{
@@ -142,7 +150,7 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 
 		}
 
-		if(index==6) break;
+		if(index==coins_to_recomm+1) break;
 
 	}
 
@@ -187,7 +195,7 @@ void recommendation_based_on_lsh(MyVector** vec_pointers,int l,char* metric,stri
 
   			for(auto elem : result_list){
 
-  				outfile<<coin_array[elem.pos]<<"-"<<elem.prediction<<" ";
+  				outfile<<coin_array[elem.pos]<<" ";
   			}
 
   			outfile<<endl;
@@ -256,7 +264,7 @@ void recommendation_based_on_clustering(MyVector** vec_pointers,int l,char* metr
   					outfile<<"User "<<vec_pointers[j]->int_id<<" predictions: "<<" ";
 
   					for(auto elem : result_list){
-  						outfile<<coin_array[elem.pos]<<"-"<<elem.prediction<<" ";
+  						outfile<<coin_array[elem.pos]<<" ";
   					}
   					outfile<<endl;
 
@@ -294,29 +302,29 @@ void validation_on_lsh(MyVector** vec_pointers,int l,char* metric)
 		// insert training set into lsh tables
 		// training set and test set are different in every iteration
 		LSH_Tables* Tables = new LSH_Tables(l);
-		for(int i=0; i<DATA_NUMBER; i++)
+		for(int j=0; j<DATA_NUMBER; j++)
 		{
-			if(i<start_index || i>end_index)
+			if(j<start_index || j>end_index)
 			{
-				Tables->insert_cosine(vec_pointers[i]);
+				Tables->insert_cosine(vec_pointers[j]);
 			}
   		}
 
 		long double mae_of_fold = 0.0;
 
   		// for every user we want to predict its unknown coins
-  		for(int i=start_index; i<end_index; i++)
+  		for(int k=start_index; k<end_index; k++)
 		{
 
 			//find his top neighbors
-			list<MyVector*> range_users = find_single_users(Tables->range_search_cosine(vec_pointers[i],0.9));
-  			list<help_node> nodes =  select_top_neighbors(vec_pointers[i],range_users,metric);
+			list<MyVector*> range_users = find_single_users(Tables->range_search_cosine(vec_pointers[k],0.9));
+  			list<help_node> nodes =  select_top_neighbors(vec_pointers[k],range_users,metric);
 
   			list<result_node> result_list;
 
   			if(nodes.size()!=0)
   			{  				
-  				result_list = make_prediction(nodes,help_node(vec_pointers[i],0),1);
+  				result_list = make_prediction(nodes,help_node(vec_pointers[k],0),1);
 
   				long double mae = 0.0;
   				int num = 0;
@@ -342,7 +350,7 @@ void validation_on_lsh(MyVector** vec_pointers,int l,char* metric)
   			}
   			else
   			{
-  				cout<<"No neighbors found for user: "<<vec_pointers[i]->int_id<<endl;
+  				cout<<"No neighbors found for user: "<<vec_pointers[k]->int_id<<endl;
   			}
 
   		
@@ -364,4 +372,118 @@ void validation_on_lsh(MyVector** vec_pointers,int l,char* metric)
 	cout<<"Total mae: "<<total_mae_of_fold/10<<endl;
 
 	
+}
+
+void validation_on_clustering(MyVector** vec_pointers,int l,char* metric,int cluster_num,int initialization,int assignment,int update)
+{
+
+	cout<<"Clustering.."<<endl;
+
+	Cluster_Table* Ctable = new Cluster_Table(cluster_num,metric,initialization,assignment,update,l,0);
+  	Ctable->clustering(vec_pointers);
+
+  	Cluster** clusters = Ctable->get_clusters();
+
+  	cout<<"Validation based on clustering..."<<endl;
+
+  	list<cluster_node> n;
+
+  	long double total_mae_for_all_clusters = 0.0;
+
+  	int not_empty_clusters = 0;
+
+  	for(int c=0; c<cluster_num; c++)
+  	{
+  		if((clusters[c]->get_list()).size()!=0 && (clusters[c]->get_list()).size()>10 )
+  		{
+  		not_empty_clusters++;
+
+  		n = clusters[c]->get_list();
+  		MyVector** neighbors = new MyVector*[(clusters[c]->get_list()).size()];
+  		int index = 0;
+  		for(auto elem : n)
+  		{
+  			neighbors[index] = elem.Vector;
+  			index++;
+  		}
+
+  		list<MyVector*> list_neighbors;	
+  		for(auto elem : n){
+  		list_neighbors.push_back(elem.Vector);
+  		}
+
+		int start_index = 0;
+		int data_per_fold = (clusters[c]->get_list()).size()/10;
+		int end_index = (clusters[c]->get_list()).size()/10;
+
+		long double total_mae_of_fold = 0.0;
+
+		for(int i=0; i<10; i++)
+		{
+
+		cout<<"Valid for cluster: "<<c<<"-->Fold "<<i+1<<"--Testing with data "<<start_index<<"-"<<end_index<<" training with the other"<<endl;
+
+		long double mae_of_fold = 0.0;
+
+  		for(int j=start_index; j<end_index; j++)
+		{
+
+  			list<help_node> nodes =  select_top_neighbors(neighbors[j],list_neighbors,metric);
+
+  			list<result_node> result_list;
+
+  			if(nodes.size()!=0)
+  			{  				
+  				result_list = make_prediction(nodes,help_node(vec_pointers[j],0),1);
+
+  				long double mae = 0.0;
+  				int num = 0;
+
+  				for(auto elem : result_list){
+
+  					if(elem.flag == 2){
+
+  						num++;
+  						mae += abs(elem.prediction - elem.old_val);
+  					}
+  				}
+
+  				if(num!=0)
+  				{
+
+  				mae = mae/num;
+
+  				mae_of_fold += mae;
+
+  				}
+
+  			}
+  			else
+  			{
+  				cout<<"No neighbors found for user: "<<vec_pointers[j]->int_id<<endl;
+  			}
+
+  		
+  		}
+
+  		mae_of_fold = mae_of_fold/(end_index - start_index);
+
+  		cout<<"mae of fold "<<mae_of_fold<<endl;
+
+  		total_mae_of_fold += mae_of_fold;
+
+		start_index += data_per_fold;
+		end_index += data_per_fold;
+	}
+
+	cout<<"Total mae of cluster: "<<c<<" "<<total_mae_of_fold/10<<endl;
+
+	total_mae_for_all_clusters += total_mae_of_fold/10;
+  	}
+
+  }
+
+  	cout<<"Total mae for all_clusters: "<<total_mae_for_all_clusters/not_empty_clusters<<endl;
+
+  	delete Ctable;
 }

@@ -254,7 +254,13 @@ User** create_iconic_users(User** users,Tweet** T,int user_number,string cluster
 
 	cout<<"Clustering to create iconic users.."<<endl;
 
-	Cluster_Table* Ctable = new Cluster_Table(ICONIC_USERS,"cosine",1,1,1,5,0);
+	string str = "cosine";
+  	char *cstr = new char[str.length() + 1];
+  	strcpy(cstr, str.c_str());
+
+	Cluster_Table* Ctable = new Cluster_Table(ICONIC_USERS,cstr,1,1,1,5,0);
+
+	delete []cstr;
 
 	int flag = 1;
 

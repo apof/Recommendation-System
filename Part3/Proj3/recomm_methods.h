@@ -6,7 +6,7 @@
 #include "../../Part2/Proj2_updated/cluster.h"
 
 #define PN 20
-#define USERS_TO_RECOMM 4
+#define USERS_TO_RECOMM 150
 
 class help_node{
 
@@ -56,13 +56,35 @@ public:
 			if(flag[i]==1){
 
 				flag[i] = 2;
-				val[i] = mean_val;
 				index++;
 			}
 
 			if(index==number_to_hide+1)
 				break;
 		}
+
+		// compute new mean value
+		int known_num = 0;
+		long double mean_v = 0.0;
+		for(int i=0; i<DATA_VECTOR_SIZE; i++){
+
+			if(flag[i]==1)
+			{
+				known_num++;
+				mean_v += val[i];
+			}
+
+		}
+
+		mean_v = mean_v/known_num;
+
+		// set value of unknown coins equal to new mean value
+		for(int i=0; i<DATA_VECTOR_SIZE; i++){
+
+			if(flag[i]!=1)
+				val[i] = mean_v;
+		}
+
 	}
 
 	void print_help_node(){
@@ -134,6 +156,8 @@ list<result_node> make_prediction(list<help_node> nodes, help_node prediction_no
 void recommendation_based_on_lsh(MyVector**,int,char*,string* coins,string);
 void recommendation_based_on_clustering(MyVector**,int,char*,string* coins,string,int,int,int,int);
 void validation_on_lsh(MyVector**,int,char*);
+void validation_on_clustering(MyVector**,int,char*,int,int,int,int);
+
 
 
 #endif
