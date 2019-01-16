@@ -140,7 +140,7 @@ else if(Recommendation==2)
   if(argc!=10)
     recommendation_based_on_clustering(vec_pointers,l,cstr,coin_array,output_file,cluster_num,1,1,1);
   else
-    validation_on_clustering(vec_pointers,l,cstr,cluster_num,1,1,1);
+    validation_on_clustering_new(vec_pointers,l,cstr,cluster_num,1,1,1);
 
   delete []cstr;
 
