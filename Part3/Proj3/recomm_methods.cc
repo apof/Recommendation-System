@@ -487,3 +487,159 @@ void validation_on_clustering(MyVector** vec_pointers,int l,char* metric,int clu
 
   	delete Ctable;
 }
+
+void set_unknown_vec(MyVector** vec_array,int start,int end){
+
+	for(int ind=start; ind<end; ind++){
+
+		int known_number = 0;
+		for(int i=0; i<DATA_VECTOR_SIZE; i++)
+		{
+			if(vec_array[ind]->flag[i]==1) known_number++;
+		}
+		if(known_number==1) return;
+
+		int number_to_hide = known_number/2;
+
+		int index = 1;
+
+		for(int i=0; i<DATA_VECTOR_SIZE; i++)
+		{
+			if(vec_array[ind]->flag[i]==1){
+
+				vec_array[ind]->flag[i] = 2;
+				index++;
+			}
+
+			if(index==number_to_hide+1)
+				break;
+		}
+
+		// compute new mean value
+		int known_num = 0;
+		long double mean_v = 0.0;
+		for(int i=0; i<DATA_VECTOR_SIZE; i++){
+
+			if(vec_array[ind]->flag[i]==1)
+			{
+				known_num++;
+				mean_v += vec_array[ind]->doubleVecArray[i];
+			}
+
+		}
+
+		mean_v = mean_v/known_num;
+
+		// set value of unknown coins equal to new mean value
+		for(int i=0; i<DATA_VECTOR_SIZE; i++){
+
+			if(vec_array[ind]->flag[i]!=1)
+				vec_array[ind]->doubleVecArray[i] = mean_v;
+		}
+
+	}
+}
+
+void reset_vectors(MyVector** vec_array,int start,int end){
+
+	for(int ind=start; ind<end; ind++)
+	{
+
+		for(int i=0; i<DATA_VECTOR_SIZE; i++)
+		{
+			if(vec_array[ind]->flag[i]!=1)
+				vec_array[ind]->doubleVecArray[i] = vec_array[ind]->mean_value;
+
+		}
+
+	}
+
+}
+
+void validation_on_clustering_new(MyVector** vec_pointers,int l,char* metric,int cluster_num,int initialization,int assignment,int update)
+{
+
+	int start_index = 0;
+	int data_per_fold = DATA_NUMBER/10;
+	int end_index = DATA_NUMBER/10;
+
+	long double total_mae = 0.0;
+
+	cout<<"Validation based on clustering..."<<endl;
+
+	for(int i=0; i<10; i++)
+	{
+		set_unknown_vec(vec_pointers,start_index,end_index);
+
+		cout<<"Fold "<<i<<" clustering.."<<endl;
+
+		Cluster_Table* Ctable = new Cluster_Table(cluster_num,metric,initialization,assignment,update,l,0);
+  		Ctable->clustering(vec_pointers);
+
+  		Cluster** clusters = Ctable->get_clusters();
+
+  		for(int i=0; i<cluster_num; i++)
+  		{
+
+  			list<cluster_node> n;
+
+  			if((clusters[i]->get_list()).size() > 1)
+  			{
+  				n = clusters[i]->get_list();
+
+  			list<MyVector*> neighbors;
+
+	  		for(auto elem : n)
+	  		{
+  			neighbors.push_back(elem.Vector);
+  			}
+
+  			for(auto elem : neighbors)
+  			{
+
+  				if(elem->int_id > start_index && elem->int_id < end_index)
+  				{
+
+  					list<help_node> nodes =  select_top_neighbors(elem,neighbors,metric);
+  					list<result_node> result_list;
+
+  					if(nodes.size()!=0)
+  					{  				
+  						result_list = make_prediction(nodes,help_node(elem,0),1);
+  						long double mae = 0.0;
+  						int num = 0;
+
+  						for(auto elem : result_list){
+
+  							if(elem.flag == 2){
+  								num++;
+  								mae += abs(elem.prediction - elem.old_val);
+  							}
+  						}
+
+  					if(num!=0)
+  					{
+  						mae = mae/num;
+  						total_mae += mae;
+  					}
+
+  					}
+  				}
+
+  			}
+
+  		}
+
+  		}
+
+  		reset_vectors(vec_pointers,start_index,end_index);
+
+		start_index += data_per_fold;
+		end_index += data_per_fold;
+		//delete []Ctable;
+  	}
+
+
+  	cout<<"Total mae for clustering Recommendation: "<<total_mae/DATA_NUMBER<<endl;
+
+}

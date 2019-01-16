@@ -150,6 +150,7 @@ struct result_node_Comparator
 	}
 };
 
+
 list<MyVector*> find_single_users(list<MyVector*>);
 list<help_node> select_top_neighbors(MyVector*,list<MyVector*>,char* metric);
 list<result_node> make_prediction(list<help_node> nodes, help_node prediction_node);
@@ -157,9 +158,9 @@ void recommendation_based_on_lsh(MyVector**,int,char*,string* coins,string);
 void recommendation_based_on_clustering(MyVector**,int,char*,string* coins,string,int,int,int,int);
 void validation_on_lsh(MyVector**,int,char*);
 void validation_on_clustering(MyVector**,int,char*,int,int,int,int);
-
-
-
+void validation_on_clustering_new(MyVector**,int,char*,int,int,int,int);
+void set_unknown_vec(MyVector**,int,int);
+void reset_vectors(MyVector**,int,int);
 #endif
 
 
