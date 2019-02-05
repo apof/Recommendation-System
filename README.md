@@ -1,4 +1,4 @@
-# Recommendation-System-for tweets and cryptocoins based-on-Lsh-and-Clustering
+# Recommendation-System based-on Lsh-Clustering
 
 This is a 3-part project.
 
