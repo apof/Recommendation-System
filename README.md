@@ -1,5 +1,4 @@
-# Recommendation-System-based-on-Lsh-and-Clustering-Projects
-Recommendation System Based On LSH and Clustering
+# Recommendation-System-for tweets and cryptocoins based-on-Lsh-and-Clustering
 
 This is a 3-part project.
 
