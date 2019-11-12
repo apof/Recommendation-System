@@ -2,7 +2,7 @@
 
 This is a 3-part project.
 
--->In the first part, I implemented an LSH data structure for eucledian and cosine metric, which is designed for 
+-->In the first part, I implemented an LSH data structure for euclidian and cosine metric, which is designed for 
 efficient range search and nn (nearest neighbors) search in high dimensions. Another hybrid LSH alternative has been implemented. It is based on random-projection theory, as it stores similar items at the same tops of a hypercube. It requires
 less space and remains as effective as the classic LSH. For the evaluation of the models, maximum fraction of true and
 approximate nn is being computed.
@@ -11,4 +11,4 @@ approximate nn is being computed.
 
 -->The last part concerns the implementation of a collaborative recommendation system for cryptocurrnecies, based on
 twitter's users' tweets. Firstly, given a dataset of tokenized tweets and a sentiment analysis score lexicon, Ι  created 
-every user's vector, based on cryptocoins that he/she has mentioned and his/her tweets' content. As the result of this preprocessing, I create a single vector for every user, in each position of which his/her total sentiment for the corresponding coin is stored . As far as the application is concerned, it predicts top unknown coins (cryptocoins that a given user has never commented before on his/her tweets) using clustering or LSH-range search. These two methods have been used in order to find quickly and efficiently users' nearest neighbors. 10-fold cross validation has been also implemented in order to test the perforamnce of the model. Mae (mean absolute error) has been utilized.
+every user's vector, based on cryptocoins that he/she has mentioned and his/her tweets' content. As the result of this preprocessing, I create a single vector for every user, in each position of which his/her total sentiment for the corresponding coin is stored . As far as the application is concerned, it predicts top unknown coins (cryptocoins that a given user has never commented before on his/her tweets) using clustering or LSH-range search. These two methods have been used in order to find quickly and efficiently users' nearest neighbors. 10-fold cross validation has been also implemented in order to test the performance of the model. Mae (mean absolute error) has been utilized.
